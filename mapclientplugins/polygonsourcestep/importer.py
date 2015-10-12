@@ -55,6 +55,7 @@ class Reader( object ):
         elif fileExt=='.vtp':
             self.readVTP()
         else:
+            print('failed to open {}'.format(self.filename))
             raise ValueError('unknown file extension')
         
     def readVRML(self, filename=None):

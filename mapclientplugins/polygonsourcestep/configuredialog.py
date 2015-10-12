@@ -90,7 +90,7 @@ class ConfigureDialog(QtGui.QDialog):
         else:
             self._ui.idLineEdit.setStyleSheet(INVALID_STYLE_SHEET)
 
-        fileLocValid = os.path.exists(self._ui.fileLocLineEdit.text())
+        fileLocValid = (self._ui.fileLocLineEdit.text()=='' or os.path.exists(self._ui.fileLocLineEdit.text()))
         if fileLocValid:
             self._ui.fileLocLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET)
         else:

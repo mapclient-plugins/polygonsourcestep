@@ -41,7 +41,7 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'http://physiomeproject.org/workflow/1.0/rdf-schema#string'))
+                      'python#string'))
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#pointcloud'))
@@ -77,7 +77,8 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         The index is the index of the port in the port list.  If there is only one
         uses port for this step then the index can be ignored.
         '''
-        self._fileLoc = dataIn # filename string
+        self._fileLoc = str(dataIn) # filename string
+        self._config['fileLoc'] = str(dataIn)
 
     def getPortData(self, index):
         if index==1:
