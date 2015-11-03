@@ -21,6 +21,8 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 from os import path
 import vtk
 from numpy import array
+from xml.etree import ElementTree as ET
+import xml
 
 class Reader( object ):
     """Class for reading polygon files of various formats
@@ -123,7 +125,10 @@ class Reader( object ):
         if filename is not None:
             self.filename = filename
 
-        r = vtk.vtkPolyDataReader()
+        if self._isXML(self.filename):
+            r = vtk.vtkXMLPolyDataReader()
+        else:
+            r = vtk.vtkPolyDataReader()
         r.SetFileName( self.filename )
         r.Update()
         self.polydata = r.GetOutput()
@@ -133,6 +138,17 @@ class Reader( object ):
         else:
             self._loadPoints()
             self._loadTriangles()
+
+    def _isXML(self, f):
+        """Check if file is an xml file
+        """
+        with open(f, 'r') as fp:
+            l = fp.readline()
+            
+        if l[0]=='<':
+            return True
+        else:
+            return False 
 
     def _loadPoints( self ):
         P = self.polydata.GetPoints().GetData()
