@@ -25,3 +25,7 @@ Configuration
 
 Usage
 -----
+The output vertex and face data are used in a variety of plugins, especially for
+mesh-fitting and registration purposes.
+
+Also see Polygon Serialiser Step.
