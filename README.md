@@ -6,6 +6,7 @@ The supported file formats are: STL, OBJ, PLY, VRML, VTP.
 
 Requires
 --------
+- GIAS2 : https://bitbucket.org/jangle/gias2
 - VTK (>=5.10, 6) with Python bindins http://www.vtk.org/download/
 
 Inputs
