@@ -18,12 +18,12 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
     along with MAP Client.  If not, see <http://www.gnu.org/licenses/>..
 """
 
-
 import json
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.polygonsourcestep.configuredialog import ConfigureDialog
 from mapclientplugins.polygonsourcestep import importer
+
 
 class PolygonSourceStep(WorkflowStepMountPoint):
     '''
@@ -33,7 +33,7 @@ class PolygonSourceStep(WorkflowStepMountPoint):
 
     def __init__(self, location):
         super(PolygonSourceStep, self).__init__('Polygon Source', location)
-        self._configured = False # A step cannot be executed until it has been configured.
+        self._configured = False  # A step cannot be executed until it has been configured.
         self._category = 'Source'
         # Add any other initialisation code here:
         # Ports:
@@ -64,9 +64,9 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         '''
         # Put your execute step code here before calling the '_doneExecution' method.
         self._vertices, self._faces = importer.importPolygon(
-                                        self._config['fileFormat'],
-                                        self._config['fileLoc'],
-                                        )
+            self._config['fileFormat'],
+            self._config['fileLoc'],
+        )
         self._doneExecution()
 
     def setPortData(self, index, dataIn):
@@ -75,11 +75,11 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         The index is the index of the port in the port list.  If there is only one
         uses port for this step then the index can be ignored.
         '''
-        self._fileLoc = str(dataIn) # filename string
+        self._fileLoc = str(dataIn)  # filename string
         self._config['fileLoc'] = str(dataIn)
 
     def getPortData(self, index):
-        if index==1:
+        if index == 1:
             return self._vertices
         else:
             return self._faces
@@ -97,10 +97,10 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         dlg.setConfig(self._config)
         dlg.validate()
         dlg.setModal(True)
-        
+
         if dlg.exec_():
             self._config = dlg.getConfig()
-        
+
         self._configured = dlg.validate()
         self._configuredObserver()
 
@@ -134,4 +134,3 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
-
