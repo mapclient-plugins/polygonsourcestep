@@ -157,19 +157,19 @@ class Reader(object):
         self._nPoints = P.GetNumberOfTuples()
 
         if self._dimensions == 1:
-            self._points = array([P.GetTuple1(i) for i in xrange(self._nPoints)])
+            self._points = array([P.GetTuple1(i) for i in range(self._nPoints)])
         elif self._dimensions == 2:
-            self._points = array([P.GetTuple2(i) for i in xrange(self._nPoints)])
+            self._points = array([P.GetTuple2(i) for i in range(self._nPoints)])
         elif self._dimensions == 3:
-            self._points = array([P.GetTuple3(i) for i in xrange(self._nPoints)])
+            self._points = array([P.GetTuple3(i) for i in range(self._nPoints)])
         elif self._dimensions == 4:
-            self._points = array([P.GetTuple4(i) for i in xrange(self._nPoints)])
+            self._points = array([P.GetTuple4(i) for i in range(self._nPoints)])
         elif self._dimensions == 9:
-            self._points = array([P.GetTuple9(i) for i in xrange(self._nPoints)])
+            self._points = array([P.GetTuple9(i) for i in range(self._nPoints)])
 
     def _loadTriangles(self):
         polyData = self.polydata.GetPolys().GetData()
-        X = [int(polyData.GetTuple1(i)) for i in xrange(polyData.GetNumberOfTuples())]
+        X = [int(polyData.GetTuple1(i)) for i in range(polyData.GetNumberOfTuples())]
 
         # assumes that faces are triangular
         X = array(X).reshape((-1, 4))
