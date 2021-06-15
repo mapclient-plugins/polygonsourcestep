@@ -156,9 +156,6 @@ class Reader(object):
         self._dimensions = P.GetNumberOfComponents()
         self._nPoints = P.GetNumberOfTuples()
 
-        print
-        'loading %(np)i points in %(d)i dimensions' % {'np': self._nPoints, 'd': self._dimensions}
-
         if self._dimensions == 1:
             self._points = array([P.GetTuple1(i) for i in xrange(self._nPoints)])
         elif self._dimensions == 2:
@@ -179,9 +176,6 @@ class Reader(object):
         self._nFaces = X.shape[0]
         self._triangles = X[:, 1:]
 
-        print
-        'loaded %(f)i faces' % {'f': self._nFaces}
-
 
 supported_suffixes = ('auto', 'stl', 'wrl', 'obj', 'ply', 'vtp')
 
@@ -190,12 +184,6 @@ def importPolygon(suffix, filename, options=None):
     if suffix not in supported_suffixes:
         raise ValueError('Unsupported suffix {}'.format(suffix))
 
-    print('#########')
-    print
-    suffix
-    print
-    filename
-    print('#########')
     r = Reader()
     if suffix == 'auto':
         r.read(filename)
@@ -209,10 +197,5 @@ def importPolygon(suffix, filename, options=None):
         r.readPLY(filename)
     elif suffix == 'vtp':
         r.readVTP(filename)
-
-    print
-    r._points.shape
-    print
-    r._triangles.shape
 
     return r._points, r._triangles
