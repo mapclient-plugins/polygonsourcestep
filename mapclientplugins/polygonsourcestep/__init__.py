@@ -24,4 +24,3 @@ __location__ = 'https://github.com/mapclient-plugins/polygonsourcestep/archive/v
 
 # import class that derives itself from the step mountpoint.
 from mapclientplugins.polygonsourcestep import step
-
