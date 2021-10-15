@@ -28,9 +28,9 @@ DEFAULT_STYLE_SHEET = ''
 
 
 class ConfigureDialog(QtWidgets.QDialog):
-    '''
+    """
     Configure dialog to present the user with the options to configure this step.
-    '''
+    """
 
     def __init__(self, parent=None):
         '''
@@ -58,10 +58,10 @@ class ConfigureDialog(QtWidgets.QDialog):
         self._workflow_location = location
 
     def accept(self):
-        '''
+        """
         Override the accept method so that we can confirm saving an
         invalid configuration.
-        '''
+        """
         result = QtWidgets.QMessageBox.Yes
         if not self.validate():
             result = QtWidgets.QMessageBox.warning(self, 'Invalid Configuration',
