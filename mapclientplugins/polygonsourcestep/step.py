@@ -49,10 +49,11 @@ class PolygonSourceStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#faces'))
         self._config = {}
-        self._config['identifier'] = ''
         self._config['fileFormat'] = 'stl'
         self._config['fileLoc'] = ''
         # self._config['formatOptions'] = None
+
+        self._identifier = ''
 
         self._vertices = None
         self._faces = None
@@ -100,7 +101,6 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         """
         dlg = ConfigureDialog(self._main_window)
         dlg.setWorkflowLocation(self._location)
-        dlg.identifierOccursCount = self._identifierOccursCount
         dlg.setConfig(self._config)
         dlg.validate()
         dlg.setModal(True)
@@ -115,13 +115,13 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         """
         The identifier is a string that must be unique within a workflow.
         """
-        return self._config['identifier']
+        return self._identifier
 
     def setIdentifier(self, identifier):
         """
         The framework will set the identifier for this step when it is loaded.
         """
-        self._config['identifier'] = identifier
+        self._identifier = identifier
 
     def serialize(self):
         """
@@ -139,6 +139,5 @@ class PolygonSourceStep(WorkflowStepMountPoint):
 
         d = ConfigureDialog()
         d.setWorkflowLocation(self._location)
-        d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()

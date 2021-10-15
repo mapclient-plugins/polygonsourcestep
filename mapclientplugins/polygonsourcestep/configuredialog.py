@@ -43,14 +43,6 @@ class ConfigureDialog(QtWidgets.QDialog):
 
         self._workflow_location = None
 
-        # Keep track of the previous identifier so that we can track changes
-        # and know how many occurrences of the current identifier there should be.
-        self._previousIdentifier = ''
-        self._previousFileLoc = ''
-        # Set a place holder for a callable that will get set from the step.
-        # We will use this method to decide whether the identifier is unique.
-        self.identifierOccursCount = None
-
         self._setupDialog()
         self._makeConnections()
 
@@ -59,7 +51,6 @@ class ConfigureDialog(QtWidgets.QDialog):
             self._ui.fileFormatCombo.addItem(s)
 
     def _makeConnections(self):
-        self._ui.idLineEdit.textChanged.connect(self.validate)
         self._ui.fileLocButton.clicked.connect(self._fileLocClicked)
         self._ui.fileLocLineEdit.textChanged.connect(self._fileLocEdited)
 
@@ -87,46 +78,29 @@ class ConfigureDialog(QtWidgets.QDialog):
         set the style sheet to the INVALID_STYLE_SHEET.  Return the outcome of the
         overall validity of the configuration.
         """
-        # Determine if the current identifier is unique throughout the workflow
-        # The identifierOccursCount method is part of the interface to the workflow framework.
-        id_value = self.identifierOccursCount(self._ui.idLineEdit.text())
-        id_valid = (id_value == 0) or (id_value == 1 and self._previousIdentifier == self._ui.idLineEdit.text())
-        if id_valid:
-            self._ui.idLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET)
-        else:
-            self._ui.idLineEdit.setStyleSheet(INVALID_STYLE_SHEET)
-
         file_loc_valid = os.path.isfile(os.path.join(self._workflow_location, self._ui.fileLocLineEdit.text()))
         self._ui.fileLocLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET if file_loc_valid else INVALID_STYLE_SHEET)
 
-        valid = id_valid and file_loc_valid
-        self._ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(id_valid)
+        # Disable OK button if path invalid.
+        # self._ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(file_loc_valid)
 
-        return valid
+        return file_loc_valid
 
     def getConfig(self):
         """
-        Get the current value of the configuration from the dialog.  Also
-        set the _previousIdentifier value so that we can check uniqueness of the
-        identifier over the whole of the workflow.
+        Get the current value of the configuration from the dialog.
         """
-        self._previousIdentifier = self._ui.idLineEdit.text()
         self._previousFileLoc = self._ui.fileLocLineEdit.text()
         config = {}
-        config['identifier'] = self._ui.idLineEdit.text()
         config['fileFormat'] = self._ui.fileFormatCombo.currentText()
         config['fileLoc'] = self._ui.fileLocLineEdit.text()
         return config
 
     def setConfig(self, config):
         """
-        Set the current value of the configuration for the dialog.  Also
-        set the _previousIdentifier value so that we can check uniqueness of the
-        identifier over the whole of the workflow.
+        Set the current value of the configuration for the dialog.
         """
-        self._previousIdentifier = config['identifier']
         self._previousFileLoc = config['fileLoc']
-        self._ui.idLineEdit.setText(config['identifier'])
         self._ui.fileFormatCombo.setCurrentIndex(
             importer.supported_suffixes.index(
                 config['fileFormat']
