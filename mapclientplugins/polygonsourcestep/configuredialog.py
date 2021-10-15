@@ -78,11 +78,17 @@ class ConfigureDialog(QtWidgets.QDialog):
         set the style sheet to the INVALID_STYLE_SHEET.  Return the outcome of the
         overall validity of the configuration.
         """
-        file_loc_valid = os.path.isfile(os.path.join(self._workflow_location, self._ui.fileLocLineEdit.text()))
+        output_directory = self._ui.fileLocLineEdit.text()
+        non_empty = len(output_directory)
+        if not os.path.isabs(output_directory):
+            output_directory = os.path.join(self._workflow_location, output_directory)
+
+        file_loc_valid = os.path.exists(output_directory) and non_empty
+
         self._ui.fileLocLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET if file_loc_valid else INVALID_STYLE_SHEET)
 
         # Disable OK button if path invalid.
-        # self._ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(file_loc_valid)
+        self._ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(file_loc_valid)
 
         return file_loc_valid
 
@@ -112,7 +118,11 @@ class ConfigureDialog(QtWidgets.QDialog):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Select File Location', self._previousFileLoc)
         if location[0]:
             self._previousFileLoc = location[0]
-            self._ui.fileLocLineEdit.setText(location[0])
+
+            if self._workflow_location:
+                self._ui.fileLocLineEdit.setText(os.path.relpath(location[0], self._workflow_location))
+            else:
+                self._ui.fileLocLineEdit.setText(location[0])
 
     def _fileLocEdited(self):
         self.validate()

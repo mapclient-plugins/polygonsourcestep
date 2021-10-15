@@ -67,11 +67,13 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         Make sure you call the _doneExecution() method when finished.  This method
         may be connected up to a button in a widget for example.
         """
-        # Put your execute step code here before calling the '_doneExecution' method.
+        file_location = self._config['fileLoc']
+        if not os.path.isabs(file_location):
+            file_location = os.path.join(self._location, file_location)
+
         self._vertices, self._faces = importer.importPolygon(
             self._config['fileFormat'],
-            # self._config['fileLoc'],
-            os.path.join(self._location, self._config['fileLoc'])
+            file_location
         )
 
         self._doneExecution()
