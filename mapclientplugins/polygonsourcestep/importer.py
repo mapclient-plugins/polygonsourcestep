@@ -21,8 +21,6 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 from os import path
 import vtk
 from numpy import array
-from xml.etree import ElementTree as ET
-import xml
 
 
 class Reader(object):
