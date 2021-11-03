@@ -41,6 +41,8 @@ class ConfigureDialog(QtWidgets.QDialog):
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
 
+        self._workflow_location = None
+
         # Keep track of the previous identifier so that we can track changes
         # and know how many occurrences of the current identifier there should
         # be.
@@ -77,6 +79,9 @@ class ConfigureDialog(QtWidgets.QDialog):
         if result == QtWidgets.QMessageBox.Yes:
             QtWidgets.QDialog.accept(self)
 
+    def setWorkflowLocation(self, location):
+        self._workflow_location = location
+
     def validate(self):
         '''
         Validate the configuration dialog fields.  For any field that is not valid
@@ -87,16 +92,14 @@ class ConfigureDialog(QtWidgets.QDialog):
         # The identifierOccursCount method is part of the interface to the workflow framework.
         idValue = self.identifierOccursCount(self._ui.idLineEdit.text())
         idValid = (idValue == 0) or (idValue == 1 and self._previousIdentifier == self._ui.idLineEdit.text())
-        if idValid:
-            self._ui.idLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET)
-        else:
-            self._ui.idLineEdit.setStyleSheet(INVALID_STYLE_SHEET)
+        self._ui.idLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET if idValid else INVALID_STYLE_SHEET)
 
-        fileLocValid = (self._ui.fileLocLineEdit.text() == '' or os.path.exists(self._ui.fileLocLineEdit.text()))
-        if fileLocValid:
-            self._ui.fileLocLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET)
-        else:
-            self._ui.fileLocLineEdit.setStyleSheet(INVALID_STYLE_SHEET)
+        output_location = self._output_location()
+        if self._workflow_location:
+            output_location = os.path.join(self._workflow_location, output_location)
+
+        fileLocValid = os.path.exists(output_location)
+        self._ui.fileLocLineEdit.setStyleSheet(DEFAULT_STYLE_SHEET if fileLocValid else INVALID_STYLE_SHEET)
 
         valid = idValid and fileLocValid
         self._ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(idValid)
@@ -137,7 +140,18 @@ class ConfigureDialog(QtWidgets.QDialog):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Select File Location', self._previousFileLoc)
         if location[0]:
             self._previousFileLoc = location[0]
-            self._ui.fileLocLineEdit.setText(location[0])
+            display_location = self._output_location(location[0])
+            self._ui.fileLocLineEdit.setText(display_location)
+
+    def _output_location(self, location=None):
+        if location is None:
+            display_path = self._ui.fileLocLineEdit.text()
+        else:
+            display_path = location
+        if self._workflow_location and os.path.isabs(display_path):
+            display_path = os.path.relpath(display_path, self._workflow_location)
+
+        return display_path
 
     def _fileLocEdited(self):
         self.validate()

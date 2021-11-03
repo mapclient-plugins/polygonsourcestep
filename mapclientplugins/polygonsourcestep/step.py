@@ -18,6 +18,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
     along with MAP Client.  If not, see <http://www.gnu.org/licenses/>..
 """
 
+import os
 import json
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
@@ -65,7 +66,7 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         # Put your execute step code here before calling the '_doneExecution' method.
         self._vertices, self._faces = importer.importPolygon(
             self._config['fileFormat'],
-            self._config['fileLoc'],
+            os.path.join(self._location, self._config['fileLoc'])
         )
         self._doneExecution()
 
@@ -93,6 +94,7 @@ class PolygonSourceStep(WorkflowStepMountPoint):
             self._configured = True
         '''
         dlg = ConfigureDialog(self._main_window)
+        dlg.setWorkflowLocation(self._location)
         dlg.identifierOccursCount = self._identifierOccursCount
         dlg.setConfig(self._config)
         dlg.validate()
@@ -131,6 +133,7 @@ class PolygonSourceStep(WorkflowStepMountPoint):
         self._config.update(json.loads(string))
 
         d = ConfigureDialog()
+        d.setWorkflowLocation(self._location)
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
