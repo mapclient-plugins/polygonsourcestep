@@ -20,6 +20,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 
 __version__ = '1.0.0'
 __author__ = 'Ju Zhang'
+__stepname__ = 'Polygon Source'
 __location__ = 'https://github.com/mapclient-plugins/polygonsourcestep/archive/v1.0.0.zip'
 
 # import class that derives itself from the step mountpoint.
