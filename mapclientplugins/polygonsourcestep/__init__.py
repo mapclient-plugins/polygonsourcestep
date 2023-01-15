@@ -18,7 +18,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
     along with MAP Client.  If not, see <http://www.gnu.org/licenses/>..
 """
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'Ju Zhang'
 __stepname__ = 'Polygon Source'
 __location__ = 'https://github.com/mapclient-plugins/polygonsourcestep/archive/v1.0.0.zip'
