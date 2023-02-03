@@ -21,8 +21,6 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 from os import path
 import vtk
 from numpy import array
-from xml.etree import ElementTree as ET
-import xml
 
 
 class Reader(object):
@@ -38,8 +36,14 @@ class Reader(object):
         self._dimensions = None
         self.polydata = None
 
-    def setFilename(self, filename):
+    def set_filename(self, filename):
         self.filename = filename
+
+    def get_points(self):
+        return self._points
+
+    def get_triangles(self):
+        return self._triangles
 
     def read(self, filename=None):
         if filename is not None:
@@ -48,20 +52,20 @@ class Reader(object):
         filePrefix, fileExt = path.splitext(self.filename)
         fileExt = fileExt.lower()
         if fileExt == '.obj':
-            self.readOBJ()
+            self.read_obj()
         elif fileExt == '.wrl':
-            self.readVRML()
+            self.read_vrml()
         elif fileExt == '.stl':
-            self.readSTL()
+            self.read_stl()
         elif fileExt == '.ply':
-            self.readPLY()
+            self.read_ply()
         elif fileExt == '.vtp':
-            self.readVTP()
+            self.read_vtp()
         else:
             print('failed to open {}'.format(self.filename))
             raise ValueError('unknown file extension')
 
-    def readVRML(self, filename=None):
+    def read_vrml(self, filename=None):
         if filename is not None:
             self.filename = filename
         r = vtk.vtkVRMLImporter()
@@ -71,13 +75,13 @@ class Reader(object):
         actors.InitTraversal()
         self.polydata = actors.GetNextActor().GetMapper().GetInput()
 
-        if self.polydata.GetPoints() == None:
+        if self.polydata.GetPoints() is None:
             raise IOError('file not loaded')
         else:
-            self._loadPoints()
-            self._loadTriangles()
+            self._load_points()
+            self._load_triangles()
 
-    def readOBJ(self, filename=None):
+    def read_obj(self, filename=None):
         if filename is not None:
             self.filename = filename
 
@@ -86,13 +90,13 @@ class Reader(object):
         r.Update()
         self.polydata = r.GetOutput()
 
-        if self.polydata.GetPoints() == None:
+        if self.polydata.GetPoints() is None:
             raise IOError('file not loaded')
         else:
-            self._loadPoints()
-            self._loadTriangles()
+            self._load_points()
+            self._load_triangles()
 
-    def readPLY(self, filename=None):
+    def read_ply(self, filename=None):
         if filename is not None:
             self.filename = filename
 
@@ -101,13 +105,13 @@ class Reader(object):
         r.Update()
         self.polydata = r.GetOutput()
 
-        if self.polydata.GetPoints() == None:
+        if self.polydata.GetPoints() is None:
             raise IOError('file not loaded')
         else:
-            self._loadPoints()
-            self._loadTriangles()
+            self._load_points()
+            self._load_triangles()
 
-    def readSTL(self, filename=None):
+    def read_stl(self, filename=None):
         if filename is not None:
             self.filename = filename
 
@@ -116,17 +120,17 @@ class Reader(object):
         r.Update()
         self.polydata = r.GetOutput()
 
-        if self.polydata.GetPoints() == None:
+        if self.polydata.GetPoints() is None:
             raise IOError('file not loaded')
         else:
-            self._loadPoints()
-            self._loadTriangles()
+            self._load_points()
+            self._load_triangles()
 
-    def readVTP(self, filename=None):
+    def read_vtp(self, filename=None):
         if filename is not None:
             self.filename = filename
 
-        if self._isXML(self.filename):
+        if self._is_xml(self.filename):
             r = vtk.vtkXMLPolyDataReader()
         else:
             r = vtk.vtkPolyDataReader()
@@ -134,24 +138,25 @@ class Reader(object):
         r.Update()
         self.polydata = r.GetOutput()
 
-        if self.polydata.GetPoints() == None:
+        if self.polydata.GetPoints() is None:
             raise IOError('file not loaded')
         else:
-            self._loadPoints()
-            self._loadTriangles()
+            self._load_points()
+            self._load_triangles()
 
-    def _isXML(self, f):
+    @staticmethod
+    def _is_xml(f):
         """Check if file is an xml file
         """
         with open(f, 'r') as fp:
-            l = fp.readline()
+            line = fp.readline()
 
-        if l[0] == '<':
+        if line[0] == '<':
             return True
         else:
             return False
 
-    def _loadPoints(self):
+    def _load_points(self):
         P = self.polydata.GetPoints().GetData()
         self._dimensions = P.GetNumberOfComponents()
         self._nPoints = P.GetNumberOfTuples()
@@ -167,7 +172,7 @@ class Reader(object):
         elif self._dimensions == 9:
             self._points = array([P.GetTuple9(i) for i in range(self._nPoints)])
 
-    def _loadTriangles(self):
+    def _load_triangles(self):
         polyData = self.polydata.GetPolys().GetData()
         X = [int(polyData.GetTuple1(i)) for i in range(polyData.GetNumberOfTuples())]
 
@@ -180,7 +185,7 @@ class Reader(object):
 supported_suffixes = ('auto', 'stl', 'wrl', 'obj', 'ply', 'vtp')
 
 
-def importPolygon(suffix, filename, options=None):
+def import_polygon(suffix, filename):
     if suffix not in supported_suffixes:
         raise ValueError('Unsupported suffix {}'.format(suffix))
 
@@ -188,14 +193,14 @@ def importPolygon(suffix, filename, options=None):
     if suffix == 'auto':
         r.read(filename)
     if suffix == 'obj':
-        r.readOBJ(filename)
+        r.read_obj(filename)
     elif suffix == 'wrl':
-        r.readVRML(filename)
+        r.read_vrml(filename)
     elif suffix == 'stl':
-        r.readSTL(filename)
+        r.read_stl(filename)
     elif suffix == 'ply':
-        r.readPLY(filename)
+        r.read_ply(filename)
     elif suffix == 'vtp':
-        r.readVTP(filename)
+        r.read_vtp(filename)
 
-    return r._points, r._triangles
+    return r.get_points(), r.get_triangles()
