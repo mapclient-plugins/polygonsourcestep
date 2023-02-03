@@ -19,8 +19,13 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 """
 
 from os import path
-import vtk
 from numpy import array
+
+from vtkmodules.vtkIOImport import vtkVRMLImporter
+from vtkmodules.vtkIOGeometry import vtkOBJReader, vtkSTLReader
+from vtkmodules.vtkIOPLY import vtkPLYReader
+from vtkmodules.vtkIOXML import vtkXMLPolyDataReader
+from vtkmodules.vtkIOLegacy import vtkPolyDataReader
 
 
 class Reader(object):
@@ -68,7 +73,7 @@ class Reader(object):
     def read_vrml(self, filename=None):
         if filename is not None:
             self.filename = filename
-        r = vtk.vtkVRMLImporter()
+        r = vtkVRMLImporter()
         r.SetFileName(self.filename)
         r.Update()
         actors = r.GetRenderer().GetActors()
@@ -85,7 +90,7 @@ class Reader(object):
         if filename is not None:
             self.filename = filename
 
-        r = vtk.vtkOBJReader()
+        r = vtkOBJReader()
         r.SetFileName(self.filename)
         r.Update()
         self.polydata = r.GetOutput()
@@ -100,7 +105,7 @@ class Reader(object):
         if filename is not None:
             self.filename = filename
 
-        r = vtk.vtkPLYReader()
+        r = vtkPLYReader()
         r.SetFileName(self.filename)
         r.Update()
         self.polydata = r.GetOutput()
@@ -115,7 +120,7 @@ class Reader(object):
         if filename is not None:
             self.filename = filename
 
-        r = vtk.vtkSTLReader()
+        r = vtkSTLReader()
         r.SetFileName(self.filename)
         r.Update()
         self.polydata = r.GetOutput()
@@ -131,9 +136,9 @@ class Reader(object):
             self.filename = filename
 
         if self._is_xml(self.filename):
-            r = vtk.vtkXMLPolyDataReader()
+            r = vtkXMLPolyDataReader()
         else:
-            r = vtk.vtkPolyDataReader()
+            r = vtkPolyDataReader()
         r.SetFileName(self.filename)
         r.Update()
         self.polydata = r.GetOutput()
